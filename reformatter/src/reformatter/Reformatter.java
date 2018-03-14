@@ -63,6 +63,8 @@ public class Reformatter implements ActionListener {
 		contentPane.add(outLabel);
 		contentPane.add(outputName);
 		
+		contentPane.add(formatButton);
+		
 		//contentPane.add(outputFileName);
 		frame.add(contentPane);
 		frame.pack();
@@ -83,7 +85,7 @@ public class Reformatter implements ActionListener {
 			
 		}
 		if(e.getSource() == outputButton) {
-			fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			int returnVal = fc.showOpenDialog(frame);
 			if(returnVal == JFileChooser.APPROVE_OPTION) {
 				try {
@@ -96,7 +98,9 @@ public class Reformatter implements ActionListener {
 			}
 		}
 		if(e.getSource() == formatButton) {
-			UpdateFormat.updateFormat(inputFile, 0, outputFile);
+			int[] stats = UpdateFormat.updateFormat(inputFile, 0, outputFile); //stats will be in order of 0: words processed
+																			   //1: number of lines, 2: blank lines removed
+																			   //3:avg words per line, 4: avg line length
 		}
 		
 	}
