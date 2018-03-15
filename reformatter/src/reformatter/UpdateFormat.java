@@ -27,7 +27,7 @@ public class UpdateFormat {
 	            		continue;
 	            	}*/
 	            	
-	            	//case 1: havne't reached line max
+	            	//case 1: haven't reached line max
 	            	if(line.length() < 80) { 
 	            		if((char)singleChar == '\n' || singleChar == '\r') {
 	            			//return on empty line, add one to tracker and continue
@@ -147,18 +147,26 @@ public class UpdateFormat {
 	            
 			 PrintWriter writer = new PrintWriter(outputName, "UTF-8");
 			 if(justification == 1) { //if right justified
+				 int spaceleft = 0;
 				 for(int i = 0; i < writeArray.length; i++) {
-					 	String formatted = String.format("%80s", writeArray[i]);
-	            		writer.println(formatted);
+					 spaceleft = 80-writeArray[i].length();
+					 for(int j = 0; j < spaceleft; j++)
+					 {
+						 writer.print(" ");
+					 }
+					 //String formatted = String.format("%80d", writeArray[i]);
+					 //writer.println(formatted);
+					 writer.println(writeArray[i]);
 				 }
-	            }else {
+	            }
+			 else {
 	            	for(int i = 0; i < writeArray.length; i++) {
 	            		writer.println(writeArray[i]);
 	            	}
 	            	}
 	            	
-//
-	            // Always close files.
+
+	            //Always close files.
 	            writer.close();
 	        }
 	        catch(IOException ex) {
@@ -170,4 +178,3 @@ public class UpdateFormat {
 	        }
 	    }
 	}
-
