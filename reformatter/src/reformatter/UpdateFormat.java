@@ -157,7 +157,7 @@ public class UpdateFormat {
 	            	}
 	            	}
 	            	
-
+//
 	            // Always close files.
 	            writer.close();
 	        }
