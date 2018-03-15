@@ -121,7 +121,7 @@ public class UpdateFormat {
 	            // Always close files.
 	            bufferedReader.close();
 	            String[] toWrite = writeArray.toArray(new String[writeArray.size()]);
-	            WriteLine(toWrite, 0, outputName);
+	            WriteLine(toWrite, justification, outputName);
 	        }
 	        catch(FileNotFoundException ex) {
 	        	System.out.println("Unable to open file '" + filename + "'");                
@@ -148,7 +148,7 @@ public class UpdateFormat {
 			 PrintWriter writer = new PrintWriter(outputName, "UTF-8");
 			 if(justification == 1) { //if right justified
 				 for(int i = 0; i < writeArray.length; i++) {
-					 	String formatted = String.format("%80d", writeArray[i]);
+					 	String formatted = String.format("%80s", writeArray[i]);
 	            		writer.println(formatted);
 				 }
 	            }else {
