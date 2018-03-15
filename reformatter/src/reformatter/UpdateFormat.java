@@ -9,6 +9,7 @@ public class UpdateFormat {
 		int[] returnArray = new int[5];
 		String line = "";
 		ArrayList<String> writeArray = new ArrayList<String>();
+		boolean prevWasReturn = false;
 		int blankLines = 0;
         int singleChar;
         int whiteCount = 0;
@@ -22,21 +23,22 @@ public class UpdateFormat {
 
 	            while((singleChar = bufferedReader.read()) != -1) {
 	            	totalChars ++;
-	            	/*if(singleChar == '\n' || singleChar == '\r') {
-	            		blankLines++;
+	            	if(singleChar == '\n')
 	            		continue;
-	            	}*/
+	            	if( singleChar == '\r') { //singleChar == '\n' ||
+	            		//return on empty line, add one to tracker and continue
+            			if(prevWasReturn) {
+            				blankLines += 1;
+            			}
+        				//not return on empty line so disregard and continue
+        				prevWasReturn = true;
+            			continue;
+            		}
+            		prevWasReturn = false;
 	            	
 	            	//case 1: havne't reached line max
 	            	if(line.length() < 80) { 
-	            		if((char)singleChar == '\n' || singleChar == '\r') {
-	            			//return on empty line, add one to tracker and continue
-	            			if(line.length() < 1) {
-	            				blankLines++;
-	            			}
-            				//not return on empty line so disregard and continue
-            				continue;
-	            		}
+	            		
 	            		//handle whitespace first
 	            		if(Character.isWhitespace((char)singleChar)) {
 	            			//have we found a none whitespace for this line yet
@@ -61,23 +63,36 @@ public class UpdateFormat {
 	            	}else {
 	            		if(Character.isWhitespace((char)singleChar)) {
 	            			//80th character is whitespace so put line into the arraylist and wipe it out
-	            			writeArray.add(line);
+	    	            	if(Character.isWhitespace(line.charAt(line.length()-1))) { 
+	            				line = line.substring(0,line.length()-2);
+	            				whiteCount --;
+	    	            	}
+	        				writeArray.add(line);
+	            			
 	            			line = "";
 	            		}else if(singleChar == '\n' || singleChar == '\r') {
 	            			//80th char is line break, put line into array list and wipe it
-	            			writeArray.add(line);
+	            			if(Character.isWhitespace(line.charAt(line.length()-1))) { 
+	            				line = line.substring(0,line.length()-2);
+	            				whiteCount --;
+	    	            	}
+	        				writeArray.add(line);
 	            			line = "";
 	            			
 	            		}else {
 	            			//check if previous char is white space
 	            			if(Character.isWhitespace(line.charAt(line.length()-1))) {
 	            				//previous char is whitespace so just add line to array list and wipe it
+	            				if(Character.isWhitespace(line.charAt(line.length()-1))) { 
+		            				line = line.substring(0,line.length()-2);
+		            				whiteCount --;
+		    	            	}
 	            				writeArray.add(line);
 		            			line = "";
 	            			}else {
 	            				//word hangs over the line limit need to backtrack to find previous whitespace
 	            				char checker = line.charAt(line.length()-2); //we know 1st prev char isn't whitespace so go back 2
-	            				int count = 3; //since we're starting 2 chars back and since line.length is one past array spot we init to 3
+	            				int count = 2; //since we're starting 2 chars back and since line.length is one past array spot we init to 3
 	            				while(!Character.isWhitespace(checker)) { //break loop when we find a whitespace char
 	            					count++;
 	            					checker = line.charAt(line.length()-count);
@@ -117,11 +132,18 @@ public class UpdateFormat {
 	            	}else {//none whitespace, add to string and continue
 	            		line += (char)singleChar;
 	            	}*/
-	            }   
+	            }
+	            if(line.length() > 0) {
+	            	if(Character.isWhitespace(line.charAt(line.length()-1))) { 
+        				line = line.substring(0,line.length()-2);
+        				whiteCount --;
+	            	}
+    				writeArray.add(line);
+	            }//need to add final line if it isn't blank
 	            // Always close files.
 	            bufferedReader.close();
 	            String[] toWrite = writeArray.toArray(new String[writeArray.size()]);
-	            WriteLine(toWrite, 0, outputName);
+	            WriteLine(toWrite, justification, outputName);
 	        }
 	        catch(FileNotFoundException ex) {
 	        	System.out.println("Unable to open file '" + filename + "'");                
@@ -134,6 +156,7 @@ public class UpdateFormat {
 		 returnArray[2] = blankLines;
 		 returnArray[3] = returnArray[0] / returnArray[1];
 		 returnArray[4] = totalChars / returnArray[1];
+		 System.out.println(whiteCount);
 		 return returnArray;
 	}
 	
@@ -148,7 +171,7 @@ public class UpdateFormat {
 			 PrintWriter writer = new PrintWriter(outputName, "UTF-8");
 			 if(justification == 1) { //if right justified
 				 for(int i = 0; i < writeArray.length; i++) {
-					 	String formatted = String.format("%80d", writeArray[i]);
+					 	String formatted = String.format("%80s", writeArray[i]);
 	            		writer.println(formatted);
 				 }
 	            }else {
