@@ -28,7 +28,7 @@ public class UpdateFormat {
 	            	}*/
 	            	
 	            	//case 1: haven't reached line max
-	            	if(line.length() < 80) { 
+	            	if(line.length() < 40) { 
 	            		if((char)singleChar == '\n' || singleChar == '\r') {
 	            			//return on empty line, add one to tracker and continue
 	            			if(line.length() < 1) {
