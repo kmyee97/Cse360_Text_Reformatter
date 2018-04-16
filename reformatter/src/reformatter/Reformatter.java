@@ -227,40 +227,33 @@ public class Reformatter implements ActionListener {
 		}
 		if(e.getSource() == formatButton) {
 			int just;
+			int length = 60; //needs to be set by a input box, just doing this now for testing and correct method call
+			
 			if (rdbtnRightJustification.isSelected()) {
 				just = 1;
-				int[] stats = UpdateFormat.updateFormat(inputFile, just, outputFile);
-				String wordz = String.valueOf(stats[0]);
-				String lines = String.valueOf(stats[1]);
-				String blankLines = String.valueOf(stats[2]);
-				String Avg_Words = String.valueOf(stats[3]);
-				String Avg_line_length = String.valueOf(stats[4]);
-				textField.setText(wordz);
-				textField_1.setText(lines);
-				textField_2.setText(blankLines);
-				textField_3.setText(Avg_Words);
-				textField_4.setText(Avg_line_length);
 			}
 			else if (rdbtnFullJustification.isSelected()) {
-				
+				just = 2;
 			}
 			else {
 				just = 0;
-				int[] stats = UpdateFormat.updateFormat(inputFile, just, outputFile);
-				String wordz = String.valueOf(stats[0]);
-				String lines = String.valueOf(stats[1]);
-				String blankLines = String.valueOf(stats[2]);
-				String Avg_Words = String.valueOf(stats[3]);
-				String Avg_line_length = String.valueOf(stats[4]);
-				textField.setText(wordz);
-				textField_1.setText(lines);
-				textField_2.setText(blankLines);
-				textField_3.setText(Avg_Words);
-				textField_4.setText(Avg_line_length);
 			}
-																	//stats will be in order of 0: words processed
-																		   //1: number of lines, 2: blank lines removed
-																			   //3:avg words per line, 4: avg line length
+			
+			
+			int[] stats = UpdateFormat.updateFormat(inputFile, just, length, outputFile);
+			String wordz = String.valueOf(stats[0]);
+			String lines = String.valueOf(stats[1]);
+			String blankLines = String.valueOf(stats[2]);
+			String Avg_Words = String.valueOf(stats[3]);
+			String Avg_line_length = String.valueOf(stats[4]);
+			textField.setText(wordz);
+			textField_1.setText(lines);
+			textField_2.setText(blankLines);
+			textField_3.setText(Avg_Words);
+			textField_4.setText(Avg_line_length);
+			//stats will be in order of 0: words processed
+		   //1: number of lines, 2: blank lines removed
+		   //3:avg words per line, 4: avg line length
 			//
 			
 		}
