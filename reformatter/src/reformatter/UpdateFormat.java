@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 public class UpdateFormat {
 	
-	public static int[] updateFormat(String filename, int justification, String outputName) {
-		int[] returnArray = new int[5];
+	public static int[] updateFormat(String filename, int justification, int length, int spacing, String outputName) {
+		int[] returnArray = new int[6];
 		String line = "";
 		ArrayList<String> writeArray = new ArrayList<String>();
 		int blankLines = 0;
@@ -14,6 +14,7 @@ public class UpdateFormat {
         int whiteCount = 0;
         int totalChars = 0;
         int lineCount = 0;
+        int spacesAdded = 0;
 		 try {
 	            // FileReader reads text files in the default encoding.
 	            FileReader fileReader = new FileReader(filename);
@@ -22,13 +23,8 @@ public class UpdateFormat {
 
 	            while((singleChar = bufferedReader.read()) != -1) {
 	            	totalChars ++;
-	            	/*if(singleChar == '\n' || singleChar == '\r') {
-	            		blankLines++;
-	            		continue;
-	            	}*/
-	            	
 	            	//case 1: haven't reached line max
-	            	if(line.length() < 80) { 
+	            	if(line.length() < length) { 
 	            		if((char)singleChar == '\n' || singleChar == '\r') {
 	            			//return on empty line, add one to tracker and continue
 	            			if(line.length() < 1) {
@@ -90,38 +86,11 @@ public class UpdateFormat {
 	            		}
 	            		lineCount++;
 	            	}
-	            	
-	            	/*
-	            	if(Character.isWhitespace((char)singleChar)) {
-	            		whiteCount++;
-	            		
-	            		if(line.length() >= 79) {
-	            			if(whiteCount == 1 && line.length() >= 79) {//first white space at more than 80 chars means single word is greater than limit, simply write that word on one line
-	            				writeArray.add(line); //leave justification at left to avoid truncation
-	            			}else if(Character.isWhitespace(line.charAt(line.length()-1))) { //check if previous char is whitespace too
-	            				continue; //double whitespace, just skip this one
-	            			}else if(line.length() >= 79){ //more than 1 whitespace and 80 or characters, need to backtrack to previous whitespace and write all before it
-	            				char checker = line.charAt(line.length()-2); //we know last char isn't whitespace so go back 2
-	            				int count = 2;
-	            				while(!Character.isWhitespace(checker)) { //break loop when we find a whitespace char
-	            					count++;
-	            					checker = line.charAt(line.length()-count);
-	            				}
-	            				//WriteLine(line.substring(0,line.length()-(count+1)), justification, outputName); //write substring up to, but not including whitespace
-	            				writeArray.add(line.substring(0,line.length()-(count+1)));
-	            				line = line.substring(line.length()-(count-1), line.length()); //reset line as everything after
-	            			}
-	            		}else {//string isn't at max yet, add one whitespace to end and continue
-	            			line += (char)singleChar;
-	            		}
-	            	}else {//none whitespace, add to string and continue
-	            		line += (char)singleChar;
-	            	}*/
 	            }   
 	            // Always close files.
 	            bufferedReader.close();
 	            String[] toWrite = writeArray.toArray(new String[writeArray.size()]);
-	            WriteLine(toWrite, justification, outputName);
+	            spacesAdded = WriteLine(toWrite, justification, length, spacing, outputName);
 	        }
 	        catch(FileNotFoundException ex) {
 	        	System.out.println("Unable to open file '" + filename + "'");                
@@ -134,46 +103,78 @@ public class UpdateFormat {
 		 returnArray[2] = blankLines;
 		 returnArray[3] = returnArray[0] / returnArray[1];
 		 returnArray[4] = totalChars / returnArray[1];
+		 returnArray[5] = spacesAdded;
 		 return returnArray;
 	}
 	
-	static void WriteLine(String[] writeArray, int justification, String outputName) {
-		 try {
+	static int WriteLine(String[] writeArray, int justification, int length, int spacing, String outputName) {
+		int spacesAdded = 0; 
+		try {
 	            // Assume default encoding.
 	            //FileWriter fileWriter = new FileWriter(outputName);
 
 	            // Always wrap FileWriter in BufferedWriter.
 	            //BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 	            
-			 PrintWriter writer = new PrintWriter(outputName, "UTF-8");
-			 if(justification == 1) { //if right justified
+			PrintWriter writer = new PrintWriter(outputName, "UTF-8");
+			if(justification == 1) { //if right justified
 				 int spaceleft = 0;
 				 for(int i = 0; i < writeArray.length; i++) {
-					 spaceleft = 80-writeArray[i].length();
+					 spaceleft = length-writeArray[i].length();
 					 for(int j = 0; j < spaceleft; j++)
 					 {
 						 writer.print(" ");
 					 }
 					 //String formatted = String.format("%80d", writeArray[i]);
 					 //writer.println(formatted);
+					 if(spacing == 1 && i != 0)
+						 writer.println("\n");
 					 writer.println(writeArray[i]);
 				 }
-	            }
-			 else {
-	            	for(int i = 0; i < writeArray.length; i++) {
-	            		writer.println(writeArray[i]);
-	            	}
-	            	}
-	            	
-
-	            //Always close files.
-	            writer.close();
+			}else if(justification == 0) { //left justified
+            	for(int i = 0; i < writeArray.length; i++) {
+            		if(spacing == 1 && i != 0)
+						 writer.println("\n");
+            		writer.println(writeArray[i]);
+            	}
+        	}else if(justification == 2) { //full justified
+        		for(int i = 0; i < writeArray.length; i++) {
+        			String tempString = writeArray[i];
+    				while(tempString.length() < length) {
+    					System.out.println("inside loop");
+    					boolean whiteSpace = false;
+    					for(int j = 0; j < tempString.length(); j++) {
+    						if(tempString.length() >= length) {
+    							break;
+    						}else if(Character.isWhitespace(tempString.charAt(j))){
+    							String sub1 = tempString.substring(0, j);
+    							String sub2 = tempString.substring(j, tempString.length());
+    							tempString = sub1 + " " + sub2;
+    							j++;
+    							spacesAdded ++;
+    							whiteSpace = true;
+    						}
+    					}
+    					if(!whiteSpace) {
+    						tempString = " " + tempString + " ";
+    					}
+    						
+    				}
+    				writeArray[i] = tempString;
+        		}
+        		for(int i = 0; i < writeArray.length; i++) {
+        			if(spacing == 1 && i != 0)
+						 writer.println("\n");
+        			writer.println(writeArray[i]);
+            	}
+        	}
+            //Always close files.
+            writer.close();
+            return spacesAdded;
 	        }
 	        catch(IOException ex) {
-	            //System.out.println(
-	             //   "Error writing to file '" + outputName + "'");
-	            // Or we could just do this:
 	            ex.printStackTrace();
+	            return 0;
 	            
 	        }
 	    }
