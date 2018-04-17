@@ -18,8 +18,10 @@ public class Reformatter implements ActionListener {
 	JFrame frame;
 	JTextField inputName;
 	JTextField outputName;
+	JTextField lineLength;
 	JLabel inLabel;
 	JLabel outLabel;
+	JLabel lengthLabel;
 	ButtonGroup group;
 	ButtonGroup group2;
 	//JTextField outputFileName;
@@ -47,6 +49,7 @@ public class Reformatter implements ActionListener {
 	 JLabel lblHelp_9;
 	 JLabel lblHelp_10;
 	 JLabel spaces_added;
+	 JLabel blankLabel;
  JTextField textField_4;
  JTextField textField_5;
  private JRadioButton rdbtnLeftJustification;
@@ -68,7 +71,7 @@ public class Reformatter implements ActionListener {
 		frame.setVisible(true);
 		
 		JPanel contentPane = new JPanel(new BorderLayout());
-		contentPane.setLayout(new GridLayout(12,3));
+		contentPane.setLayout(new GridLayout(13,3));
 		
 		inputName = new JTextField();
 		outputName = new JTextField();
@@ -81,6 +84,8 @@ public class Reformatter implements ActionListener {
 		formatButton.addActionListener(this);
 		inLabel = new JLabel("Input File: ");
 		outLabel = new JLabel("Output File: ");
+		lengthLabel = new JLabel("Line Length: ");
+		lineLength = new JTextField("20");
 		//outputFileName = new JTextField("Enter output file name here");
 		
 		contentPane.add(openButton);
@@ -92,33 +97,45 @@ public class Reformatter implements ActionListener {
 		contentPane.add(outputName);
 		
 		contentPane.add(formatButton);
+		contentPane.add(lengthLabel);
+		contentPane.add(lineLength);
 		
 		//contentPane.add(outputFileName);
 		frame.getContentPane().add(contentPane);
 		
 		rdbtnLeftJustification = new JRadioButton("Left Justification (Default)", true);
-		contentPane.add(rdbtnLeftJustification, BorderLayout.SOUTH);
-		
+		rdbtnLeftJustification.setSelected(true);
 		rdbtnRightJustification = new JRadioButton("Right Justification", false);
+		rdbtnFullJustification = new JRadioButton("Full Justification", false);
+		singlebtn = new JRadioButton("Single Spacing", true);
+		singlebtn.setSelected(true);
+		doublebtn = new JRadioButton("Double Spacing", false);
+		
+		group = new ButtonGroup();
+		group.add(rdbtnLeftJustification);
+		group.add(rdbtnRightJustification);
+		group.add(rdbtnFullJustification);
+		group2 = new ButtonGroup();
+		group2.add(singlebtn);
+		group2.add(doublebtn);
+		
+		contentPane.add(rdbtnLeftJustification, BorderLayout.SOUTH);
 		contentPane.add(rdbtnRightJustification, BorderLayout.SOUTH);
+		contentPane.add(rdbtnFullJustification, BorderLayout.SOUTH);
+		contentPane.add(singlebtn, BorderLayout.SOUTH);
+		contentPane.add(doublebtn, BorderLayout.SOUTH);
+		
+		blankLabel = new JLabel();
+		contentPane.add(blankLabel);
 		
 		lblHelp_2 = new JLabel("");
 		contentPane.add(lblHelp_2, BorderLayout.SOUTH);
-		
-		rdbtnFullJustification = new JRadioButton("Full Justification", false);
-		contentPane.add(rdbtnFullJustification, BorderLayout.SOUTH);
 		
 		lblHelp_3 = new JLabel("");
 		contentPane.add(lblHelp_3, BorderLayout.SOUTH);
 		
 		lblHelp_8 = new JLabel("");
 		contentPane.add(lblHelp_8, BorderLayout.SOUTH);
-		
-		singlebtn = new JRadioButton("Single Spacing", true);
-		contentPane.add(singlebtn, BorderLayout.SOUTH);
-		
-		doublebtn = new JRadioButton("Double Spacing", false);
-		contentPane.add(doublebtn, BorderLayout.SOUTH);
 		
 		lblAnalysis = new JLabel("Analysis: ");
 		contentPane.add(lblAnalysis, BorderLayout.SOUTH);
@@ -186,14 +203,6 @@ public class Reformatter implements ActionListener {
 		contentPane.add(textField_5, BorderLayout.SOUTH);
 		textField_5.setColumns(10);
 		
-		group = new ButtonGroup();
-		group.add(rdbtnLeftJustification);
-		group.add(rdbtnRightJustification);
-		group.add(rdbtnFullJustification);
-		
-		group2 = new ButtonGroup();
-		group2.add(singlebtn);
-		group2.add(doublebtn);
 		frame.pack();
 		
 	}
@@ -226,8 +235,9 @@ public class Reformatter implements ActionListener {
 			}
 		}
 		if(e.getSource() == formatButton) {
+			String slength = lineLength.getText();
 			int just;
-			int length = 20; //needs to be set by a input box, just doing this now for testing and correct method call
+			int length = Integer.parseInt(slength); //needs to be set by a input box, just doing this now for testing and correct method call
 			int spacing = 0; //init here, set for button selection lower down
 			
 			if (rdbtnRightJustification.isSelected()) {
