@@ -18,8 +18,10 @@ public class Reformatter implements ActionListener {
 	JFrame frame;
 	JTextField inputName;
 	JTextField outputName;
+	JTextField lineLength;
 	JLabel inLabel;
 	JLabel outLabel;
+	JLabel lengthLabel;
 	ButtonGroup group;
 	ButtonGroup group2;
 	//JTextField outputFileName;
@@ -47,6 +49,7 @@ public class Reformatter implements ActionListener {
 	 JLabel lblHelp_9;
 	 JLabel lblHelp_10;
 	 JLabel spaces_added;
+	 JLabel blankLabel;
  JTextField textField_4;
  JTextField textField_5;
  private JRadioButton rdbtnLeftJustification;
@@ -68,7 +71,7 @@ public class Reformatter implements ActionListener {
 		frame.setVisible(true);
 		
 		JPanel contentPane = new JPanel(new BorderLayout());
-		contentPane.setLayout(new GridLayout(12,3));
+		contentPane.setLayout(new GridLayout(13,3));
 		
 		inputName = new JTextField();
 		outputName = new JTextField();
@@ -81,6 +84,8 @@ public class Reformatter implements ActionListener {
 		formatButton.addActionListener(this);
 		inLabel = new JLabel("Input File: ");
 		outLabel = new JLabel("Output File: ");
+		lengthLabel = new JLabel("Line Length: ");
+		lineLength = new JTextField("");
 		//outputFileName = new JTextField("Enter output file name here");
 		
 		contentPane.add(openButton);
@@ -92,33 +97,45 @@ public class Reformatter implements ActionListener {
 		contentPane.add(outputName);
 		
 		contentPane.add(formatButton);
+		contentPane.add(lengthLabel);
+		contentPane.add(lineLength);
 		
 		//contentPane.add(outputFileName);
 		frame.getContentPane().add(contentPane);
 		
 		rdbtnLeftJustification = new JRadioButton("Left Justification (Default)", true);
-		contentPane.add(rdbtnLeftJustification, BorderLayout.SOUTH);
-		
+		rdbtnLeftJustification.setSelected(true);
 		rdbtnRightJustification = new JRadioButton("Right Justification", false);
+		rdbtnFullJustification = new JRadioButton("Full Justification", false);
+		singlebtn = new JRadioButton("Single Spacing", true);
+		singlebtn.setSelected(true);
+		doublebtn = new JRadioButton("Double Spacing", false);
+		
+		group = new ButtonGroup();
+		group.add(rdbtnLeftJustification);
+		group.add(rdbtnRightJustification);
+		group.add(rdbtnFullJustification);
+		group2 = new ButtonGroup();
+		group2.add(singlebtn);
+		group2.add(doublebtn);
+		
+		contentPane.add(rdbtnLeftJustification, BorderLayout.SOUTH);
 		contentPane.add(rdbtnRightJustification, BorderLayout.SOUTH);
+		contentPane.add(rdbtnFullJustification, BorderLayout.SOUTH);
+		contentPane.add(singlebtn, BorderLayout.SOUTH);
+		contentPane.add(doublebtn, BorderLayout.SOUTH);
+		
+		blankLabel = new JLabel();
+		contentPane.add(blankLabel);
 		
 		lblHelp_2 = new JLabel("");
 		contentPane.add(lblHelp_2, BorderLayout.SOUTH);
-		
-		rdbtnFullJustification = new JRadioButton("Full Justification", false);
-		contentPane.add(rdbtnFullJustification, BorderLayout.SOUTH);
 		
 		lblHelp_3 = new JLabel("");
 		contentPane.add(lblHelp_3, BorderLayout.SOUTH);
 		
 		lblHelp_8 = new JLabel("");
 		contentPane.add(lblHelp_8, BorderLayout.SOUTH);
-		
-		singlebtn = new JRadioButton("Single Spacing", true);
-		contentPane.add(singlebtn, BorderLayout.SOUTH);
-		
-		doublebtn = new JRadioButton("Double Spacing", false);
-		contentPane.add(doublebtn, BorderLayout.SOUTH);
 		
 		lblAnalysis = new JLabel("Analysis: ");
 		contentPane.add(lblAnalysis, BorderLayout.SOUTH);
@@ -186,14 +203,6 @@ public class Reformatter implements ActionListener {
 		contentPane.add(textField_5, BorderLayout.SOUTH);
 		textField_5.setColumns(10);
 		
-		group = new ButtonGroup();
-		group.add(rdbtnLeftJustification);
-		group.add(rdbtnRightJustification);
-		group.add(rdbtnFullJustification);
-		
-		group2 = new ButtonGroup();
-		group2.add(singlebtn);
-		group2.add(doublebtn);
 		frame.pack();
 		
 	}
@@ -201,7 +210,7 @@ public class Reformatter implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
+		int length;
 		if(e.getSource() == openButton) {
 			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			int returnVal = fc.showOpenDialog(frame);
@@ -210,7 +219,6 @@ public class Reformatter implements ActionListener {
 				inputFile = file.getAbsolutePath();
 				inputName.setText(inputFile);
 			}
-			
 		}
 		if(e.getSource() == outputButton) {
 			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -226,43 +234,66 @@ public class Reformatter implements ActionListener {
 			}
 		}
 		if(e.getSource() == formatButton) {
-			int just;
-			if (rdbtnRightJustification.isSelected()) {
-				just = 1;
-				int[] stats = UpdateFormat.updateFormat(inputFile, just, outputFile);
-				String wordz = String.valueOf(stats[0]);
-				String lines = String.valueOf(stats[1]);
-				String blankLines = String.valueOf(stats[2]);
-				String Avg_Words = String.valueOf(stats[3]);
-				String Avg_line_length = String.valueOf(stats[4]);
-				textField.setText(wordz);
-				textField_1.setText(lines);
-				textField_2.setText(blankLines);
-				textField_3.setText(Avg_Words);
-				textField_4.setText(Avg_line_length);
-			}
-			else if (rdbtnFullJustification.isSelected()) {
-				
+			if (lineLength.getText().equals(""))
+			{
+				length = 80;
 			}
 			else {
-				just = 0;
-				int[] stats = UpdateFormat.updateFormat(inputFile, just, outputFile);
+			String slength = lineLength.getText();
+			length = Integer.parseInt(slength); //needs to be set by a input box, just doing this now for testing and correct method call
+			}
+			int just;
+			int spacing = 0; //init here, set for button selection lower down
+			
+			if (inputFile.endsWith(".txt") && outputFile.endsWith(".txt")) {
+			
+				if (rdbtnRightJustification.isSelected()) {
+					just = 1;
+				}
+				else if (rdbtnFullJustification.isSelected()) {
+					just = 2;
+				}
+				else {
+					just = 0;
+				}
+				
+				if(singlebtn.isSelected()) {
+					spacing = 0;
+				}else if(doublebtn.isSelected()) {
+					spacing = 1;
+				}
+				
+				int[] stats = UpdateFormat.updateFormat(inputFile, just, length, spacing, outputFile);
 				String wordz = String.valueOf(stats[0]);
 				String lines = String.valueOf(stats[1]);
 				String blankLines = String.valueOf(stats[2]);
 				String Avg_Words = String.valueOf(stats[3]);
 				String Avg_line_length = String.valueOf(stats[4]);
+				String spacesAdded = String.valueOf(stats[5]);
 				textField.setText(wordz);
 				textField_1.setText(lines);
 				textField_2.setText(blankLines);
 				textField_3.setText(Avg_Words);
 				textField_4.setText(Avg_line_length);
-			}
-																	//stats will be in order of 0: words processed
-																		   //1: number of lines, 2: blank lines removed
-																			   //3:avg words per line, 4: avg line length
-			//
+				textField_5.setText(spacesAdded);
+				//stats will be in order of 0: words processed
+			   //1: number of lines, 2: blank lines removed
+			   //3:avg words per line, 4: avg line length
+				//5: spaces added
 			
+			}
+			else {
+				if (!inputFile.endsWith(".txt")) {
+					inputName.setText("Select an input .txt file");
+				}
+				if (!outputFile.endsWith(".txt")) {
+					outputName.setText("Select an output .txt file");
+				}
+//				else if (inputFile.equals(outputFile)) {
+//					inputName.setText("");
+//					outputName.setText("Select different input and output .txt files");
+//				}
+			}
 		}
 		
 	}
