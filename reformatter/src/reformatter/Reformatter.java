@@ -219,7 +219,6 @@ public class Reformatter implements ActionListener {
 				inputFile = file.getAbsolutePath();
 				inputName.setText(inputFile);
 			}
-			
 		}
 		if(e.getSource() == outputButton) {
 			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -240,40 +239,55 @@ public class Reformatter implements ActionListener {
 			int length = Integer.parseInt(slength); //needs to be set by a input box, just doing this now for testing and correct method call
 			int spacing = 0; //init here, set for button selection lower down
 			
-			if (rdbtnRightJustification.isSelected()) {
-				just = 1;
-			}
-			else if (rdbtnFullJustification.isSelected()) {
-				just = 2;
+			if (inputFile.endsWith(".txt") && outputFile.endsWith(".txt")) {
+			
+				if (rdbtnRightJustification.isSelected()) {
+					just = 1;
+				}
+				else if (rdbtnFullJustification.isSelected()) {
+					just = 2;
+				}
+				else {
+					just = 0;
+				}
+				
+				if(singlebtn.isSelected()) {
+					spacing = 0;
+				}else if(doublebtn.isSelected()) {
+					spacing = 1;
+				}
+				
+				int[] stats = UpdateFormat.updateFormat(inputFile, just, length, spacing, outputFile);
+				String wordz = String.valueOf(stats[0]);
+				String lines = String.valueOf(stats[1]);
+				String blankLines = String.valueOf(stats[2]);
+				String Avg_Words = String.valueOf(stats[3]);
+				String Avg_line_length = String.valueOf(stats[4]);
+				String spacesAdded = String.valueOf(stats[5]);
+				textField.setText(wordz);
+				textField_1.setText(lines);
+				textField_2.setText(blankLines);
+				textField_3.setText(Avg_Words);
+				textField_4.setText(Avg_line_length);
+				textField_5.setText(spacesAdded);
+				//stats will be in order of 0: words processed
+			   //1: number of lines, 2: blank lines removed
+			   //3:avg words per line, 4: avg line length
+				//5: spaces added
+			
 			}
 			else {
-				just = 0;
+				if (!inputFile.endsWith(".txt")) {
+					inputName.setText("Select an input .txt file");
+				}
+				if (!outputFile.endsWith(".txt")) {
+					outputName.setText("Select an output .txt file");
+				}
+//				else if (inputFile.equals(outputFile)) {
+//					inputName.setText("");
+//					outputName.setText("Select different input and output .txt files");
+//				}
 			}
-			
-			if(singlebtn.isSelected()) {
-				spacing = 0;
-			}else if(doublebtn.isSelected()) {
-				spacing = 1;
-			}
-			
-			int[] stats = UpdateFormat.updateFormat(inputFile, just, length, spacing, outputFile);
-			String wordz = String.valueOf(stats[0]);
-			String lines = String.valueOf(stats[1]);
-			String blankLines = String.valueOf(stats[2]);
-			String Avg_Words = String.valueOf(stats[3]);
-			String Avg_line_length = String.valueOf(stats[4]);
-			String spacesAdded = String.valueOf(stats[5]);
-			textField.setText(wordz);
-			textField_1.setText(lines);
-			textField_2.setText(blankLines);
-			textField_3.setText(Avg_Words);
-			textField_4.setText(Avg_line_length);
-			textField_5.setText(spacesAdded);
-			//stats will be in order of 0: words processed
-		   //1: number of lines, 2: blank lines removed
-		   //3:avg words per line, 4: avg line length
-			//5: spaces added
-			
 		}
 		
 	}
