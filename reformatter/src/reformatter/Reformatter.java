@@ -27,8 +27,8 @@ public class Reformatter implements ActionListener {
 	//JTextField outputFileName;
 	
 	//setup vars for input/output files
-	String inputFile;
-	String outputFile;
+	String inputFile = "";
+	String outputFile = "";
 	 JLabel lblAnalysis;
 	 JLabel lblHelp_2;
 	 JLabel lblHelp_3;
@@ -85,7 +85,7 @@ public class Reformatter implements ActionListener {
 		inLabel = new JLabel("Input File: ");
 		outLabel = new JLabel("Output File: ");
 		lengthLabel = new JLabel("Line Length: ");
-		lineLength = new JTextField("");
+		lineLength = new JTextField("80");
 		//outputFileName = new JTextField("Enter output file name here");
 		
 		contentPane.add(openButton);
